@@ -3,7 +3,7 @@ package ACME::Error;
 use strict;
 
 use vars qw[$VERSION];
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 sub import {
   my $class = shift;
@@ -13,21 +13,43 @@ sub import {
     eval qq[use $package '$args'];
     die $@ if $@;
     
-    $SIG{__WARN__} = sub {
-      my $handler = $package . q[::warn_handler];
-      {
-       no strict 'refs';
-       warn &{$handler} , "\n" if exists &{$handler};
-      }
-    };
-    
-    $SIG{__DIE__}  = sub {
-      my $handler = $package . q[::die_handler];
-      {
-       no strict 'refs';
-       die &{$handler}, "\n" if exists &{$handler};
-      }
-    };
+    my $nested = -1;
+
+    { no strict 'refs';
+      $SIG{__WARN__} = sub {
+        local $SIG{__WARN__};
+        $nested++;
+        my $handler = $package . q[::warn_handler];
+        warn &{$handler}(@_) unless $nested;
+        warn @_ if $nested;
+        $nested--;
+      };
+
+      $SIG{__DIE__}  = sub {
+        local $SIG{__DIE__};
+        $nested++;
+        my $handler = $package . q[::die_handler];
+        die &{$handler}(@_) unless $nested;
+        die @_ if $nested;
+        $nested--;
+      };
+    }
+
+#    $SIG{__WARN__} = sub {
+#      my $handler = $package . q[::warn_handler];
+#      {
+#       no strict 'refs';
+#       warn &{$handler} , "\n" if exists &{$handler};
+#      }
+#    };
+
+#    $SIG{__DIE__}  = sub {
+#      my $handler = $package . q[::die_handler];
+#      {
+#       no strict 'refs';
+#       die &{$handler}, "\n" if exists &{$handler};
+#      }
+#    };
   }
 }
 
