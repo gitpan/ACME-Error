@@ -3,20 +3,21 @@ package ACME::Error;
 use strict;
 
 use vars qw[$VERSION];
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub import {
   my $class = shift;
   if ( my $style = shift ) {
     my $package = qq[ACME::Error::$style];
-    eval qq[use $package];
+    my $args    = join q[', '], @_;
+    eval qq[use $package '$args'];
     die $@ if $@;
     
     $SIG{__WARN__} = sub {
       my $handler = $package . q[::warn_handler];
       {
        no strict 'refs';
-       warn &{$handler} if exists &{$handler};
+       warn &{$handler} , "\n" if exists &{$handler};
       }
     };
     
@@ -24,7 +25,7 @@ sub import {
       my $handler = $package . q[::die_handler];
       {
        no strict 'refs';
-       die &{$handler} if exists &{$handler};
+       die &{$handler}, "\n" if exists &{$handler};
       }
     };
   }
@@ -32,7 +33,6 @@ sub import {
 
 1;
 __END__
-# Below is stub documentation for your module. You better edit it!
 
 =head1 NAME
 
@@ -57,6 +57,9 @@ backend needs to be in the C<ACME::Error> namespace and defines just two subrout
 and C<die_handler>.  The arguments passed to your subroutine are the same as those passed to the signal
 handlers, see L<perlvar> for more info on that.  You are expected to C<return> what you want to be
 C<warn>ed or C<die>d.
+
+You can also run use an C<import> function.  All arguments passed to C<ACME::Error> after
+the style to use will be passed to the backend.
 
 =head1 AUTHOR
 

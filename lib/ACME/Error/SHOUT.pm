@@ -4,7 +4,7 @@ use strict;
 no  strict 'refs';
 
 use vars qw[$VERSION];
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 *warn_handler = *die_handler = sub {
   my @error = @_;
@@ -18,29 +18,26 @@ __END__
 
 =head1 NAME
 
-ACME::Error::SHOUT - Perl extension for blah blah blah
+ACME::Error::SHOUT - ACME::Error Backend to Scream Errors
 
 =head1 SYNOPSIS
 
   use ACME::Error SHOUT;
-  blah blah blah
 
 =head1 DESCRIPTION
 
-Stub documentation for ACME::Error, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
-
-Blah blah blah.
-
-=head2 EXPORT
-
-None by default.
-
+This backend converts your errors to screams.
 
 =head1 AUTHOR
 
-A. U. Thor, a.u.thor@a.galaxy.far.far.away
+Casey West <F<casey@geeknest.com>>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2002 Casey R. West <casey@geeknest.com>.  All
+rights reserved.  This program is free software; you can
+redistribute it and/or modify it under the same terms as
+Perl itself.
 
 =head1 SEE ALSO
 
